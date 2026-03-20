@@ -48,6 +48,8 @@ static const char *ssa_header =
     "[Script Info]\n\
 Title: Default file\n\
 ScriptType: v4.00+\n\
+PlayResX: 384\n\
+PlayResY: 288\n\
 \n\
 [V4+ Styles]\n\
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n\
@@ -840,6 +842,17 @@ struct encoder_ctx *init_encoder(struct encoder_cfg *opt)
 		ctx->encoded_crlf_length = encode_line(ctx, ctx->encoded_crlf, (unsigned char *)"\r\n");
 
 	ctx->encoded_br_length = encode_line(ctx, ctx->encoded_br, (unsigned char *)"<br>");
+
+	if (opt->frame_terminator_0)
+	{
+		ctx->encoded_end_frame[0] = '\0';
+		ctx->encoded_end_frame_length = 1;
+	}
+	else
+	{
+		memcpy(ctx->encoded_end_frame, ctx->encoded_crlf, ctx->encoded_crlf_length + 1);
+		ctx->encoded_end_frame_length = ctx->encoded_crlf_length;
+	}
 
 	for (i = 0; i < ctx->nb_out; i++)
 		write_subtitle_file_header(ctx, ctx->out + i);
